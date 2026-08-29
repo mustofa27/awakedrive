@@ -53,6 +53,12 @@ class TripResource extends Resource
             Forms\Components\Section::make('Route locations')->description('Choose the trip origin and destination on the map. Telemetry completes the trip when the device reaches the destination radius.')->schema([
                 Forms\Components\ViewField::make('route_location_picker')
                     ->view('filament.forms.components.trip-route-picker')
+                    ->viewData(fn (Forms\Get $get): array => [
+                        'startLatitude' => $get('start_latitude'),
+                        'startLongitude' => $get('start_longitude'),
+                        'finishLatitude' => $get('finish_latitude'),
+                        'finishLongitude' => $get('finish_longitude'),
+                    ])
                     ->dehydrated(false)
                     ->columnSpanFull(),
                 Forms\Components\Hidden::make('start_latitude')->required(),

@@ -16,8 +16,8 @@
 
         mapElement.dataset.initialized = 'true';
         const wire = window.Livewire.find(mapElement.closest('[wire\\:id]').getAttribute('wire:id'));
-        const initialStart = [@json($get('start_latitude')), @json($get('start_longitude'))].map(Number);
-        const initialFinish = [@json($get('finish_latitude')), @json($get('finish_longitude'))].map(Number);
+        const initialStart = [@json($startLatitude), @json($startLongitude)].map(Number);
+        const initialFinish = [@json($finishLatitude), @json($finishLongitude)].map(Number);
         const defaultCenter = [-6.2, 106.816666];
         const map = L.map(mapElement).setView(initialStart.every(Number.isFinite) ? initialStart : defaultCenter, initialStart.every(Number.isFinite) ? 13 : 11);
         const markers = {};
