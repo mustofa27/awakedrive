@@ -11,30 +11,33 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     (() => {
-        const mapElement = document.getElementById('trip-route-map');
-        if (!mapElement || mapElement.dataset.initialized || !window.L) return;
+        const initialize = () => {
+            const mapElement = document.getElementById('trip-route-map');
+            if (!mapElement || mapElement.dataset.initialized || !window.L || typeof window.Livewire?.find !== 'function') return;
 
-        mapElement.dataset.initialized = 'true';
-        const wire = window.Livewire.find(mapElement.closest('[wire\\:id]').getAttribute('wire:id'));
-        const initialStart = [@json($startLatitude), @json($startLongitude)].map(Number);
-        const initialFinish = [@json($finishLatitude), @json($finishLongitude)].map(Number);
-        const defaultCenter = [-6.2, 106.816666];
-        const map = L.map(mapElement).setView(initialStart.every(Number.isFinite) ? initialStart : defaultCenter, initialStart.every(Number.isFinite) ? 13 : 11);
-        const markers = {};
-        let routeLine;
-        let mode = 'start';
+            mapElement.dataset.initialized = 'true';
+            const wire = window.Livewire.find(mapElement.closest('[wire\\:id]').getAttribute('wire:id'));
+            if (!wire) return;
+            const toCoordinatePair = (values) => values.map((value) => value === null || value === '' ? Number.NaN : Number(value));
+            const initialStart = toCoordinatePair([@json($startLatitude), @json($startLongitude)]);
+            const initialFinish = toCoordinatePair([@json($finishLatitude), @json($finishLongitude)]);
+            const defaultCenter = [-6.2, 106.816666];
+            const map = L.map(mapElement).setView(initialStart.every(Number.isFinite) ? initialStart : defaultCenter, initialStart.every(Number.isFinite) ? 13 : 11);
+            const markers = {};
+            let routeLine;
+            let mode = 'start';
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
 
-        const updateRoute = () => {
-            const start = [wire.get('data.start_latitude'), wire.get('data.start_longitude')].map(Number);
-            const finish = [wire.get('data.finish_latitude'), wire.get('data.finish_longitude')].map(Number);
+            const updateRoute = () => {
+            const start = toCoordinatePair([wire.get('data.start_latitude'), wire.get('data.start_longitude')]);
+            const finish = toCoordinatePair([wire.get('data.finish_latitude'), wire.get('data.finish_longitude')]);
             if (!start.every(Number.isFinite) || !finish.every(Number.isFinite)) return;
             if (routeLine) routeLine.remove();
             routeLine = L.polyline([start, finish], { color: '#2563eb', dashArray: '6 8', weight: 3 }).addTo(map);
-        };
+            };
 
-        const setPoint = (pointMode, latitude, longitude) => {
+            const setPoint = (pointMode, latitude, longitude) => {
             const label = pointMode === 'start' ? 'Start' : 'Destination';
             const color = pointMode === 'start' ? '#16a34a' : '#d97706';
             wire.set(`data.${pointMode}_latitude`, latitude);
@@ -42,18 +45,25 @@
             if (markers[pointMode]) markers[pointMode].remove();
             markers[pointMode] = L.circleMarker([latitude, longitude], { radius: 9, color, fillColor: color, fillOpacity: 0.9, weight: 2 }).addTo(map).bindTooltip(label, { permanent: true, direction: 'top' });
             updateRoute();
-        };
+            };
 
-        if (initialStart.every(Number.isFinite)) setPoint('start', initialStart[0], initialStart[1]);
-        if (initialFinish.every(Number.isFinite)) setPoint('finish', initialFinish[0], initialFinish[1]);
-        if (initialStart.every(Number.isFinite) && initialFinish.every(Number.isFinite)) map.fitBounds(L.latLngBounds([initialStart, initialFinish]).pad(0.25));
+            if (initialStart.every(Number.isFinite)) setPoint('start', initialStart[0], initialStart[1]);
+            if (initialFinish.every(Number.isFinite)) setPoint('finish', initialFinish[0], initialFinish[1]);
+            if (initialStart.every(Number.isFinite) && initialFinish.every(Number.isFinite)) map.fitBounds(L.latLngBounds([initialStart, initialFinish]).pad(0.25));
 
-        map.on('click', (event) => setPoint(mode, event.latlng.lat, event.latlng.lng));
-        document.querySelectorAll('.trip-map-mode').forEach((button) => button.addEventListener('click', () => {
+            map.on('click', (event) => setPoint(mode, event.latlng.lat, event.latlng.lng));
+            mapElement.closest('.space-y-3').querySelectorAll('.trip-map-mode').forEach((button) => button.addEventListener('click', () => {
             mode = button.dataset.mode;
             document.querySelectorAll('.trip-map-mode').forEach((item) => item.classList.toggle('is-active', item === button));
-        }));
-        requestAnimationFrame(() => map.invalidateSize());
+            }));
+            requestAnimationFrame(() => map.invalidateSize());
+        };
+
+        if (typeof window.Livewire?.find === 'function') {
+            initialize();
+        } else {
+            document.addEventListener('livewire:initialized', initialize, { once: true });
+        }
     })();
 </script>
 
