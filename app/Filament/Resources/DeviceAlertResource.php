@@ -15,12 +15,25 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class DeviceAlertResource extends Resource
 {
     protected static ?string $model = DeviceAlert::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && ! $user->hasRole('super_admin')) {
+            $query->whereHas('device', fn (Builder $deviceQuery) => $deviceQuery->where('company_id', $user->company_id));
+        }
+
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
@@ -30,6 +43,11 @@ class DeviceAlertResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('device_id')
                             ->relationship('device', 'device_uid')
+                            ->options(fn (): array => \App\Models\Device::query()
+                                ->when(! auth()->user()?->hasRole('super_admin'), fn (Builder $query) => $query->where('company_id', auth()->user()?->company_id))
+                                ->orderBy('device_uid')
+                                ->pluck('device_uid', 'id')
+                                ->all())
                             ->searchable()
                             ->preload()
                             ->required(),

@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -21,6 +22,18 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && ! $user->hasRole('super_admin')) {
+            $query->where('company_id', $user->company_id);
+        }
+
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
@@ -32,6 +45,7 @@ class UserResource extends Resource
                             ->relationship('company', 'name')
                             ->searchable()
                             ->preload()
+                            ->disabled(fn (): bool => ! auth()->user()?->hasRole('super_admin'))
                             ->nullable(),
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -46,7 +60,7 @@ class UserResource extends Resource
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn ($livewire) => $livewire instanceof CreateUser),
                         Forms\Components\Select::make('roles')
-                            ->relationship('roles', 'name')
+                            ->relationship('roles', 'name', modifyQueryUsing: fn (Builder $query) => auth()->user()?->hasRole('super_admin') ? $query : $query->where('name', '!=', 'super_admin'))
                             ->multiple()
                             ->preload(),
                     ]),

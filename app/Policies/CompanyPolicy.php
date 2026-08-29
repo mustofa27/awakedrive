@@ -11,7 +11,7 @@ class CompanyPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['super_admin', 'company_admin', 'company_operator']);
+        return $user->hasRole('super_admin');
     }
 
     public function view(User $user, Company $company): bool

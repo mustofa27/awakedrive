@@ -77,6 +77,17 @@ class TelemetryProcessingTest extends TestCase
         $this->assertFalse($user->can('view', $device));
     }
 
+    public function test_company_operator_cannot_access_companies_or_users_but_can_view_alerts(): void
+    {
+        $company = Company::factory()->create();
+        $operator = User::factory()->for($company)->create();
+        $operator->syncRoles([Role::firstOrCreate(['name' => 'company_operator'])]);
+
+        $this->assertFalse($operator->can('viewAny', Company::class));
+        $this->assertFalse($operator->can('viewAny', User::class));
+        $this->assertTrue($operator->can('viewAny', DeviceAlert::class));
+    }
+
     public function test_fleet_resources_are_available_for_filament_admin(): void
     {
         $this->assertTrue(class_exists(\App\Filament\Resources\CompanyResource::class));

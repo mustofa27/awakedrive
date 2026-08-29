@@ -10,4 +10,13 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (! auth()->user()?->hasRole('super_admin')) {
+            $data['company_id'] = auth()->user()?->company_id;
+        }
+
+        return $data;
+    }
 }
