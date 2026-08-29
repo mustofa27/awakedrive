@@ -36,7 +36,15 @@ class TripResource extends Resource
     {
         return $form->schema([
             Forms\Components\Section::make('Trip assignment')->schema([
-                Forms\Components\Select::make('company_id')->relationship('company', 'name')->searchable()->preload()->live()->required()->disabled(fn (): bool => ! auth()->user()?->hasRole('super_admin'))->afterStateUpdated(fn (Forms\Set $set) => [$set('device_id', null), $set('driver_id', null)]),
+                Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->default(fn (): ?int => auth()->user()?->company_id)
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required()
+                    ->hidden(fn (): bool => ! auth()->user()?->hasRole('super_admin'))
+                    ->afterStateUpdated(fn (Forms\Set $set) => [$set('device_id', null), $set('driver_id', null)]),
                 Forms\Components\Select::make('device_id')->options(fn (Forms\Get $get) => Device::query()->where('company_id', $get('company_id'))->orderBy('device_uid')->pluck('device_uid', 'id'))->searchable()->required(),
                 Forms\Components\Select::make('driver_id')->options(fn (Forms\Get $get) => Driver::query()->where('company_id', $get('company_id'))->where('is_active', true)->orderBy('name')->pluck('name', 'id'))->searchable()->required(),
                 Forms\Components\Select::make('status')->options(collect(TripStatus::cases())->mapWithKeys(fn (TripStatus $status) => [$status->value => $status->label()]))->default(TripStatus::ACTIVE->value)->required(),
