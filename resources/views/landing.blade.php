@@ -9,7 +9,6 @@
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root { --ink:#062f31; --deep:#04292b; --teal:#08716e; --mint:#dcefe8; --gold:#f4bf4f; --paper:#f6f7f1; --muted:#5d7473; }
         * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { background:var(--paper); color:var(--ink); font-family:Manrope,sans-serif; margin:0; }
