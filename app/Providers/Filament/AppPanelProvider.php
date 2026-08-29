@@ -29,6 +29,8 @@ class AppPanelProvider extends PanelProvider
             ->path('app')
             ->tenant(Company::class)
             ->login()
+            ->brandLogo(asset('awakedrive_logo_first_concept.png'))
+            ->brandLogoHeight('2.5rem')
             ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Emerald,

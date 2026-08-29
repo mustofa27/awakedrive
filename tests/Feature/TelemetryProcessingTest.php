@@ -230,8 +230,11 @@ class TelemetryProcessingTest extends TestCase
         $this->assertSame(1, $stats['offline_devices']);
     }
 
-    public function test_root_route_redirects_to_admin_panel(): void
+    public function test_root_route_displays_the_awakedrive_landing_page(): void
     {
-        $this->get('/')->assertRedirect('/admin');
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Drive awake.')
+            ->assertSee('Open control center');
     }
 }

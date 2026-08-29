@@ -28,6 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandLogo(asset('awakedrive_logo_first_concept.png'))
+            ->brandLogoHeight('2.5rem')
             ->homeUrl(fn (): string => Dashboard::getUrl(panel: 'admin'))
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
