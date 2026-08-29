@@ -1,0 +1,65 @@
+.fi-sidebar,
+.fi-sidebar-header {
+    background: #123f42 !important;
+}
+
+.fi-sidebar {
+    border-right: 1px solid #0d3032;
+}
+
+.fi-sidebar-header {
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+    box-shadow: none !important;
+}
+
+.fi-sidebar .fi-logo,
+.fi-sidebar .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-group-label,
+.fi-sidebar .fi-sidebar-collapse-button {
+    color: #f4fbf9;
+}
+
+.fi-sidebar .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-group-icon {
+    color: #9dc5be;
+}
+
+.fi-sidebar .fi-sidebar-item-button:hover {
+    background: rgb(255 255 255 / 10%);
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background: #f2b84b;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 16%);
+}
+
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #123f42;
+}
+
+.fi-sidebar .fi-sidebar-nav {
+    padding-top: 1.5rem;
+}
+
+html.dark .fi-sidebar,
+html.dark .fi-sidebar-header {
+    background: #102b2e !important;
+}
+
+html.dark .fi-sidebar {
+    border-right-color: #23484b;
+}
+
+html.dark .fi-sidebar-header {
+    border-bottom-color: rgb(157 197 190 / 16%);
+}
+
+html.dark .fi-sidebar .fi-sidebar-item-button:hover {
+    background: rgb(157 197 190 / 12%);
+}
+
+html.dark .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background: #d89e34;
+}
+
