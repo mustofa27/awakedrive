@@ -50,13 +50,17 @@ class TripResource extends Resource
                 Forms\Components\Select::make('status')->options(collect(TripStatus::cases())->mapWithKeys(fn (TripStatus $status) => [$status->value => $status->label()]))->default(TripStatus::ACTIVE->value)->required(),
                 Forms\Components\DateTimePicker::make('started_at')->default(now())->required(),
             ])->columns(2),
-            Forms\Components\Section::make('Route coordinates')->description('A trip completes when telemetry reaches the finish point within the configured radius.')->schema([
-                Forms\Components\TextInput::make('start_latitude')->numeric()->required(),
-                Forms\Components\TextInput::make('start_longitude')->numeric()->required(),
-                Forms\Components\TextInput::make('finish_latitude')->numeric()->required(),
-                Forms\Components\TextInput::make('finish_longitude')->numeric()->required(),
+            Forms\Components\Section::make('Route locations')->description('Choose the trip origin and destination on the map. Telemetry completes the trip when the device reaches the destination radius.')->schema([
+                Forms\Components\ViewField::make('route_location_picker')
+                    ->view('filament.forms.components.trip-route-picker')
+                    ->dehydrated(false)
+                    ->columnSpanFull(),
+                Forms\Components\Hidden::make('start_latitude')->required(),
+                Forms\Components\Hidden::make('start_longitude')->required(),
+                Forms\Components\Hidden::make('finish_latitude')->required(),
+                Forms\Components\Hidden::make('finish_longitude')->required(),
                 Forms\Components\TextInput::make('completion_radius_meters')->numeric()->integer()->minValue(25)->default(150)->required(),
-            ])->columns(2),
+            ]),
         ]);
     }
 
