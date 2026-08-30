@@ -18,7 +18,7 @@ class MqttListen extends Command
     {
         $mqtt = MQTT::connection();
 
-        $mqtt->subscribe('dashboard_admin-6f49/+/logs', function (string $topic, string $message) use ($service): void {
+        $mqtt->subscribe('awake-drive/+/logs', function (string $topic, string $message) use ($service): void {
             $payload = json_decode($message, true);
 
             if (! is_array($payload)) {
