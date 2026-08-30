@@ -18,7 +18,7 @@ class MqttListen extends Command
     {
         $mqtt = MQTT::connection();
 
-        $mqtt->subscribe('awake-drive/+/logs', function (string $topic, string $message) use ($service): void {
+        $handler = function (string $topic, string $message) use ($service): void {
             $payload = json_decode($message, true);
 
             if (! is_array($payload)) {
@@ -27,8 +27,10 @@ class MqttListen extends Command
                 return;
             }
 
-            $service->dispatchFromMqtt($payload);
-        });
+            $service->processPayload($payload);
+        };
+
+        $mqtt->subscribe('awake-drive/+/logs', $handler);
 
         $this->info('MQTT listener active. Waiting for telemetry...');
         $mqtt->loop(true);
